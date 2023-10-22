@@ -1,0 +1,69 @@
+public class CalloutFramework {
+
+    public static String makeCallout(String httpConfigName) {
+        // Query the custom metadata records based on the httpConfigName
+        Callout_Configuration__mdt config = [SELECT Endpoint__c, Method__c, RequestBody__c, Headers__c, URLParameters__c
+                                             FROM Callout_Configuration__mdt
+                                             WHERE DeveloperName = :httpConfigName
+                                             LIMIT 1];
+
+        HttpRequest request = createRequest(config);
+        setHeaders(request, config.Headers__c);
+        setURLParameters(request, config.URLParameters__c);
+
+        return sendRequest(request);
+    }
+
+    // Method to create an HttpRequest
+    private static HttpRequest createRequest(Callout_Configuration__mdt config) {
+        HttpRequest request = new HttpRequest();
+        request.setEndpoint(config.Endpoint__c);
+        request.setMethod(config.Method__c);
+
+        if (config.Method__c == 'POST' || config.Method__c == 'PUT') {
+            request.setHeader('Content-Type', 'application/json');
+            request.setBody(config.RequestBody__c);
+        }
+
+        return request;
+    }
+
+    // Method to set headers
+    private static void setHeaders(HttpRequest request, String headersJson) {
+        if (!String.isBlank(headersJson)) {
+            Map<String, String> headers = (Map<String, String>) JSON.deserializeUntyped(headersJson);
+            for (String key : headers.keySet()) {
+                request.setHeader(key, headers.get(key));
+            }
+        }
+    }
+
+    // Method to set URL parameters
+    private static void setURLParameters(HttpRequest request, String urlParametersJson) {
+        if (!String.isBlank(urlParametersJson)) {
+            Map<String, String> urlParameters = (Map<String, String>) JSON.deserializeUntyped(urlParametersJson);
+            String queryString = '';
+            for (String key : urlParameters.keySet()) {
+                queryString += key + '=' + EncodingUtil.urlEncode(urlParameters.get(key), 'UTF-8') + '&';
+            }
+
+            if (!String.isBlank(queryString)) {
+                // Remove the trailing '&'
+                queryString = queryString.substring(0, queryString.length() - 1);
+                request.setEndpoint(request.getEndpoint() + '?' + queryString);
+            }
+        }
+    }
+
+    // Method to send an HttpRequest and return the response
+    private static String sendRequest(HttpRequest request) {
+        Http http = new Http();
+        HttpResponse response = http.send(request);
+
+        if (response.getStatusCode() == 200) {
+            return response.getBody();
+        } else {
+            return 'Error: ' + response.getStatusCode() + ' - ' + response.getStatus();
+        }
+    }
+}
