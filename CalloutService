@@ -1,35 +1,41 @@
 public class CalloutFramework {
+    private String configName;
+    private HttpRequest request;
 
-    public static String makeCallout(String httpConfigName) {
-        // Query the custom metadata records based on the httpConfigName
+    public CalloutFramework(String configName) {
+        this.configName = configName;
+    }
+
+    public String makeCallout() {
+        // Query the custom metadata records based on the configName
         Callout_Configuration__mdt config = [SELECT Endpoint__c, Method__c, RequestBody__c, Headers__c, URLParameters__c
                                              FROM Callout_Configuration__mdt
-                                             WHERE DeveloperName = :httpConfigName
+                                             WHERE DeveloperName = :configName
                                              LIMIT 1];
 
-        HttpRequest request = createRequest(config);
-        setHeaders(request, config.Headers__c);
-        setURLParameters(request, config.URLParameters__c);
+        request = createRequest(config);
+        setHeaders(config.Headers__c);
+        setURLParameters(config.URLParameters__c);
 
-        return sendRequest(request);
+        return sendRequest();
     }
 
     // Method to create an HttpRequest
-    private static HttpRequest createRequest(Callout_Configuration__mdt config) {
-        HttpRequest request = new HttpRequest();
-        request.setEndpoint(config.Endpoint__c);
-        request.setMethod(config.Method__c);
+    private HttpRequest createRequest(Callout_Configuration__mdt config) {
+        HttpRequest req = new HttpRequest();
+        req.setEndpoint(config.Endpoint__c);
+        req.setMethod(config.Method__c);
 
         if (config.Method__c == 'POST' || config.Method__c == 'PUT') {
-            request.setHeader('Content-Type', 'application/json');
-            request.setBody(config.RequestBody__c);
+            req.setHeader('Content-Type', 'application/json');
+            req.setBody(config.RequestBody__c);
         }
 
-        return request;
+        return req;
     }
 
     // Method to set headers
-    private static void setHeaders(HttpRequest request, String headersJson) {
+    private void setHeaders(String headersJson) {
         if (!String.isBlank(headersJson)) {
             Map<String, String> headers = (Map<String, String>) JSON.deserializeUntyped(headersJson);
             for (String key : headers.keySet()) {
@@ -39,7 +45,7 @@ public class CalloutFramework {
     }
 
     // Method to set URL parameters
-    private static void setURLParameters(HttpRequest request, String urlParametersJson) {
+    private void setURLParameters(String urlParametersJson) {
         if (!String.isBlank(urlParametersJson)) {
             Map<String, String> urlParameters = (Map<String, String>) JSON.deserializeUntyped(urlParametersJson);
             String queryString = '';
@@ -56,7 +62,7 @@ public class CalloutFramework {
     }
 
     // Method to send an HttpRequest and return the response
-    private static String sendRequest(HttpRequest request) {
+    public String sendRequest() {
         Http http = new Http();
         HttpResponse response = http.send(request);
 
@@ -64,6 +70,27 @@ public class CalloutFramework {
             return response.getBody();
         } else {
             return 'Error: ' + response.getStatusCode() + ' - ' + response.getStatus();
+        }
+    }
+
+    // Method to append URL parameters
+    public void appendURLParameters(Map<String, String> params) {
+        String queryString = '';
+        for (String key : params.keySet()) {
+            queryString += key + '=' + EncodingUtil.urlEncode(params.get(key), 'UTF-8') + '&';
+        }
+
+        if (!String.isBlank(queryString)) {
+            // Remove the trailing '&'
+            queryString = queryString.substring(0, queryString.length() - 1);
+            request.setEndpoint(request.getEndpoint() + '?' + queryString);
+        }
+    }
+
+    // Method to add header parameters
+    public void addHeaderParameters(Map<String, String> headers) {
+        for (String key : headers.keySet()) {
+            request.setHeader(key, headers.get(key));
         }
     }
 }
