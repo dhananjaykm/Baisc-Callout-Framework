@@ -3,9 +3,9 @@
 ### Add "HeaderParameters__c" and "URLParameters__c" fields with the relevant JSON or key-value pairs in config metadata record. For example:
 
 ```
-`HeaderParameters__c`: {"Authorization": "Bearer Token", "Custom-Header": "Value"}
+'HeaderParameters__c': {"Authorization": "Bearer Token", "Custom-Header": "Value"}
 
-`URLParameters__c`: {"param1": "value1", "param2": "value2"}```
+'URLParameters__c': {"param1": "value1", "param2": "value2"}
 ```
 
 
