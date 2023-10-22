@@ -9,25 +9,26 @@
 ```
 
 
-### Instantiate the CalloutFramework with a configuration name**
-```CalloutFramework callout = new CalloutFramework('Example_Config');
+### Instantiate the CalloutFramework with a configuration name
+```
+CalloutService oCalloutService = new CalloutService('Example_Config');
 
 // Add header parameters
 Map<String, String> headers = new Map<String, String>{
     'Authorization' => 'Bearer YourToken',
     'Custom-Header' => 'HeaderValue'
 };
-callout.addHeaderParameters(headers);
+oCalloutService.addHeaderParameters(headers);
 
 // Append URL parameters
 Map<String, String> urlParams = new Map<String, String>{
     'param1' => 'value1',
     'param2' => 'value2'
 };
-callout.appendURLParameters(urlParams);
+oCalloutService.appendURLParameters(urlParams);
 
 // Make the callout
-String response = callout.makeCallout();
+String response = oCalloutService.makeCallout();
 
 // Process the response as needed
 System.debug('Response: ' + response);
