@@ -1,8 +1,8 @@
-public class CalloutFramework {
+public class CalloutService {
     private String configName;
     private HttpRequest request;
 
-    public CalloutFramework(String configName) {
+    public CalloutService(String configName) {
         this.configName = configName;
     }
 
