@@ -9,11 +9,13 @@ public class CalloutService {
     private String headers;
     private String urlParameters;
 
+    HTTPRequest request;
+
     public CalloutService(String configName) {
         this.configName = configName;
     }
 
-    public String makeCallout() {
+    public void makeCallout() {
         // Query the custom metadata records based on the configName
         Callout_Configuration__mdt config = [SELECT Endpoint__c, Method__c, RequestBody__c, Headers__c, URLParameters__c
                                              FROM Callout_Configuration__mdt
@@ -27,8 +29,6 @@ public class CalloutService {
         //setURLParameters(config.URLParameters__c);
         
         request = createRequest(config);
-
-        return sendRequest();
     }
 
     // Method to create an HttpRequest
