@@ -24,18 +24,20 @@ public class CalloutService {
 
         setEndpoint(config.Endpoint__c);
         setMethod(config.Method__c);
-        //setRequestBody(config.RequestBody__c);
-        //setHeaders(config.Headers__c);
-        //setURLParameters(config.URLParameters__c);
+        setRequestBody(config.RequestBody__c);
+        setHeaders(config.Headers__c);
+        setURLParameters(config.URLParameters__c);
         
         request = createRequest(config);
     }
 
     // Method to create an HttpRequest
-    private HttpRequest createRequest(Callout_Configuration__mdt config) {
+    private HttpRequest createRequest() {
         HttpRequest req = new HttpRequest();
-        req.setEndpoint(config.Endpoint__c);
-        req.setMethod(config.Method__c);
+        req.setEndpoint(endpoint);
+        req.setMethod(method);
+        req.setRequestBody(requestBody);
+        ....
 
         if (config.Method__c == 'POST' || config.Method__c == 'PUT') {
             req.setHeader('Content-Type', 'application/json');
@@ -117,6 +119,7 @@ public class CalloutService {
 
     // Method to send an HttpRequest and return the response
     public String sendRequest() {
+        request = createRequest();
         Http http = new Http();
         HttpResponse response = http.send(request);
 
