@@ -2,6 +2,13 @@ public class CalloutService {
     private String configName;
     private HttpRequest request;
 
+    //Custom metadata fields
+    private String endpoint;
+    private String method;
+    private String requestBody;
+    private String headers;
+    private String urlParameters;
+
     public CalloutService(String configName) {
         this.configName = configName;
     }
@@ -13,9 +20,13 @@ public class CalloutService {
                                              WHERE DeveloperName = :configName
                                              LIMIT 1];
 
+        setEndpoint(config.Endpoint__c);
+        setMethod(config.Method__c);
+        //setRequestBody(config.RequestBody__c);
+        //setHeaders(config.Headers__c);
+        //setURLParameters(config.URLParameters__c);
+        
         request = createRequest(config);
-        setHeaders(config.Headers__c);
-        setURLParameters(config.URLParameters__c);
 
         return sendRequest();
     }
@@ -33,6 +44,49 @@ public class CalloutService {
 
         return req;
     }
+
+    // Getter and setter methods for custom metadata fields
+    public String getEndpoint() {
+        return endpoint;
+    }
+
+    public void setEndpoint(String endpoint) {
+        this.endpoint = endpoint;
+    }
+
+    public String getMethod() {
+        return method;
+    }
+
+    public void setMethod(String method) {
+        this.method = method;
+    }
+
+    public String getRequestBody() {
+        return requestBody;
+    }
+
+    public void setRequestBody(String requestBody) {
+        this.requestBody = requestBody;
+    }
+
+    public String getHeaders() {
+        return headers;
+    }
+
+    public String getURLParameters() {
+        return urlParameters;
+    }
+    /*
+    public void setHeaders(String headers) {
+        this.headers = headers;
+    }
+    public void setURLParameters(String urlParameters) {
+        this.urlParameters = urlParameters;
+    }
+    */
+
+    
 
     // Method to set headers
     private void setHeaders(String headersJson) {
