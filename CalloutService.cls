@@ -9,7 +9,7 @@ public class CalloutService {
     private String headers;
     private String urlParameters;
 
-    HTTPRequest request;
+   
 
     public CalloutService(String configName) {
         this.configName = configName;
