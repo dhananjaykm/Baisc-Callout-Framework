@@ -145,9 +145,11 @@ public class CalloutService {
     }
 
     // Method to add header parameters
-    public void addHeaderParameters(Map<String, String> headers) {
-        for (String key : headers.keySet()) {
-            request.setHeader(key, headers.get(key));
-        }
+    public HTTPResponse sendRequest() {
+        request = createRequest();
+        
+        Http http = new Http();
+        return http.send(request);
+
     }
 }
