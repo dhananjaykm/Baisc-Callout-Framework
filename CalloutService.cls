@@ -93,9 +93,10 @@ public class CalloutService {
     // Method to set headers
     private void setHeaders(String headersJson) {
         if (!String.isBlank(headersJson)) {
-            Map<String, String> headers = (Map<String, String>) JSON.deserializeUntyped(headersJson);
-            for (String key : headers.keySet()) {
-                request.setHeader(key, headers.get(key));
+            Map<String, Object> headersMap = (Map<String, Object>) JSON.deserializeUntyped(headersJson);
+
+            for (String key : headersMap.keySet()) {
+                request.setHeader(key, String.valueOf(headersMap.get(key)));
             }
         }
     }
