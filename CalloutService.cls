@@ -33,18 +33,18 @@ public class CalloutService {
 
     // Method to create an HttpRequest
     private HttpRequest createRequest() {
-        HttpRequest req = new HttpRequest();
-        req.setEndpoint(endpoint);
-        req.setMethod(method);
-        req.setRequestBody(requestBody);
-        ....
+        request = new HttpRequest();
+        request.setEndpoint(endpoint);
+        request.setMethod(method);
+        request.setRequestBody(requestBody);
+        //url parameters 
 
         if (config.Method__c == 'POST' || config.Method__c == 'PUT') {
-            req.setHeader('Content-Type', 'application/json');
-            req.setBody(config.RequestBody__c);
+            request.setHeader('Content-Type', 'application/json');
+            request.setBody(config.RequestBody__c);
         }
 
-        return req;
+        return request;
     }
 
     // Getter and setter methods for custom metadata fields
